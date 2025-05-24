@@ -1,3 +1,244 @@
 from django.shortcuts import render
+from rest_framework.views import  APIView
+from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+from .serializers import TenantSerializer
+from .models import Tenant
+from users.models import User
+from users.serializers import UserSerializer
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.permissions import IsAuthenticated
+from users.permissions import IsMember,IsOwner,IsAdminorOwner
 
 # Create your views here
+class TenantsListView (ListAPIView,):
+    queryset = Tenant.objects.all()
+    serializer_class = TenantSerializer
+
+class TenantsCreateView(APIView):
+    permission_classes = [IsAuthenticated, IsMember]
+    def post(self, request):
+        data = request.data
+        if request.user.tenant:
+            return Response({"message": "User already belongs to a tenant"}, status=400)
+        
+        serializer = TenantSerializer(data=data)
+        if serializer.is_valid():
+            tenant = serializer.save()
+            request.user.tenant = tenant
+            request.user.role = 'Owner'
+            request.user.save()
+            response={
+                "message": "Tenant created successfully",
+                "tenant": serializer.data
+            }
+            return Response(response, status=201)
+        response={
+            "message": "Tenant creation failed",
+            "errors": serializer.errors
+        }
+        return Response(response, status=400)
+
+class TenantsRUDView(APIView):
+    permission_classes = [IsAuthenticated, IsOwner]
+    def get(self, request, tenant_id):
+        try:
+            tenant = Tenant.objects.get(id=tenant_id)
+        except Tenant.DoesNotExist:
+            return Response({"message": "Tenant not found"}, status=404)
+
+        serializer = TenantSerializer(tenant)
+        response = {
+            "message": "Tenant retrieved successfully",
+            "tenant": serializer.data
+        }
+        return Response(response, status=200)
+    
+    def put(self, request, tenant_id):
+        try:
+            tenant = Tenant.objects.get(id=tenant_id)
+        except Tenant.DoesNotExist:
+            return Response({"message": "Tenant not found"}, status=404)
+
+        serializer = TenantSerializer(tenant, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                "message": "Tenant updated successfully",
+                "tenant": serializer.data
+            }
+            return Response(response, status=200)
+
+        response = {
+            "message": "Tenant update failed",
+            "errors": serializer.errors
+        }
+        return Response(response, status=400)
+
+    def delete(self, request, tenant_id):
+        try:
+            tenant = Tenant.objects.get(id=tenant_id)
+        except Tenant.DoesNotExist:
+            return Response({"message": "Tenant not found"}, status=404)
+
+        tenant.delete()
+        response = {
+            "message": "Tenant deleted successfully"
+        }
+        return Response(response, status=204)
+
+class ManageMembersView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminorOwner]
+    
+    def post(self, request):
+        try:
+            tenant = Tenant.objects.get(id=request.user.tenant.id)
+        except Tenant.DoesNotExist:
+            return Response({"message": "Tenant not found"}, status=404)
+
+        user_email = request.data.get('user_email')
+        if not user_email:
+            return Response({"message": "User email is required"}, status=400)
+
+        try:
+            user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=404)
+        if user.tenant:
+            return Response({"message": "User already belongs to a tenant"}, status=400)
+        user.tenant = tenant
+        user.role = 'Member'
+        user.save()
+
+        response = {
+            "message": "User added to tenant successfully",
+            "user": UserSerializer(user).data
+        }
+        return Response(response, status=200)
+    
+    def delete(self, request):
+        try:
+            tenant = Tenant.objects.get(id=request.user.tenant.id)
+        except Tenant.DoesNotExist:
+            return Response({"message": "Tenant not found"}, status=404)
+
+        user_email = request.data.get('user_email')
+        if not user_email:
+            return Response({"message": "User email is required"}, status=400)
+        
+        
+
+        try:
+            user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=404)
+        
+        if request.user.role == "Admin" and user.role == "Owner":
+            return Response({"message": "Cannot remove the owner from the tenant"}, status=400)
+
+        if user.tenant != tenant:
+            return Response({"message": "User does not belong to this tenant"}, status=400)
+
+        user.tenant = None
+        user.role = 'Member'
+        user.save()
+
+        response = {
+            "message": "User removed from tenant successfully",
+            "user": UserSerializer(user).data
+        }
+        return Response(response, status=200)
+
+    # Todo: Need pagination
+    def get(self,request):
+        try:
+            tenant = Tenant.objects.get(id=request.user.tenant.id)
+        except Tenant.DoesNotExist:
+            return Response({"message": "Tenant not found"}, status=404)
+
+        members = User.objects.filter(tenant=tenant)
+        serializer = UserSerializer(members, many=True)
+        response = {
+            "message": "Members retrieved successfully",
+            "members": serializer.data
+        }
+        return Response(response, status=200)
+    
+class RoleToAdminView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminorOwner]
+    
+    def post(self, request):
+        user_email = request.data.get('user_email')
+        if not user_email:
+            return Response({"message": "User email is required"}, status=400)
+
+        try:
+            user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=404)
+
+        if user.role == 'Admin':
+            return Response({"message": "User is already an admin"}, status=400)
+
+        user.role = 'Admin'
+        user.save()
+
+        response = {
+            "message": "User promoted to Admin successfully",
+            "user": UserSerializer(user).data
+        }
+        return Response(response, status=200)
+
+class RoleToMemberView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminorOwner]
+    
+    def post(self, request):
+        user_email = request.data.get('user_email')
+        if not user_email:
+            return Response({"message": "User email is required"}, status=400)
+
+        try:
+            user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=404)
+
+        if user.role == 'Member':
+            return Response({"message": "User is already a member"}, status=400)
+
+        user.role = 'Member'
+        user.save()
+
+        response = {
+            "message": "User demoted to Member successfully",
+            "user": UserSerializer(user).data
+        }
+        return Response(response, status=200)
+
+class RoleToOwnerView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminorOwner]
+    
+    def post(self, request):
+        user_email = request.data.get('user_email')
+        if not user_email:
+            return Response({"message": "User email is required"}, status=400)
+
+        try:
+            user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=404)
+
+        if user.role == 'Owner':
+            return Response({"message": "User is already an owner"}, status=400)
+
+        if request.user.role != 'Owner':
+            return Response({"message": "Only the owner can promote a user to Owner"}, status=403)
+
+        user.role = 'Owner'
+        user.save()
+
+        response = {
+            "message": "User promoted to Owner successfully",
+            "user": UserSerializer(user).data
+        }
+        return Response(response, status=200)
+

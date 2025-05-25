@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'storages',
     'users',
     'rest_framework_simplejwt',
+    'projects'
 ]
 
 

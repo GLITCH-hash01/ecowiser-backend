@@ -6,7 +6,7 @@ from users.permissions import IsMember, IsOwner, IsAdminorOwner
 from .serializers import ProjectSerializer
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from .models import Project 
-from utils.choices import SubscriptionTiers_Limits
+from billings.subscriptions import SubscriptionTiers_Details
 # Create your views here.
 class CreateProjectView(APIView):
   permission_classes = [IsAuthenticated, IsAdminorOwner]
@@ -21,9 +21,12 @@ class CreateProjectView(APIView):
 
     # Check if the user has reached the project limit for their subscription tier
     current_project_count=request.user.tenant.projects.count()
-    if current_project_count >= SubscriptionTiers_Limits[request.user.tenant.subscription_tier]['projects']:
-      return Response({"message": "Project limit reached for your subscription tier"}, status=400)
-    
+    print(request.user.tenant.subscription_tier)
+    subscription_tier_limit= SubscriptionTiers_Details[request.user.tenant.subscription_tier]['projects']
+    if subscription_tier_limit is not None:
+      if current_project_count >= subscription_tier_limit:
+        return Response({"message": "Project limit reached for your subscription tier"}, status=400)
+
     serializer = ProjectSerializer(data=data)
     if not serializer.is_valid():
       return Response({"message": "Project creation failed", "errors": serializer.errors}, status=400)

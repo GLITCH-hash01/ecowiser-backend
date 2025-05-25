@@ -9,9 +9,12 @@ from users.serializers import UserSerializer
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.permissions import IsAuthenticated
 from users.permissions import IsMember,IsOwner,IsAdminorOwner
-
+from billings.models import Billing
+from billings.serializers import BillingsSerializer
+from django.db import transaction
+from rest_framework.serializers import ValidationError
 # Create your views here
-class TenantsListView (ListAPIView,):
+class TenantsListView(ListAPIView):
     queryset = Tenant.objects.all()
     serializer_class = TenantSerializer
 
@@ -21,23 +24,51 @@ class TenantsCreateView(APIView):
         data = request.data
         if request.user.tenant:
             return Response({"message": "User already belongs to a tenant"}, status=400)
+        subscription_tier = data.get('subscription_tier', 'Free')
         
-        serializer = TenantSerializer(data=data)
-        if serializer.is_valid():
-            tenant = serializer.save()
-            request.user.tenant = tenant
-            request.user.role = 'Owner'
-            request.user.save()
+        try:
+            with transaction.atomic():
+                # Creating the Tenant
+                serializer = TenantSerializer(data=data)
+                if serializer.is_valid():
+                    tenant = serializer.save()
+                else:
+                    print(serializer.errors)
+                    response={
+                        "message": "Tenant creation failed",
+                    }
+                    raise ValidationError(response, status=400)
+                
+                # Creating the Billing record
+                billing_serializer = BillingsSerializer(data={
+                    "tenant": tenant.id,
+                    "subscription_tier": subscription_tier
+                })
+                if billing_serializer.is_valid():
+                    billing_serializer.save()
+                else: 
+                    response={
+                        "message": "Billing record creation failed",
+                    }
+                    raise ValidationError(response)
+
+                # Assigning the tenant to the user
+                request.user.tenant = tenant
+                request.user.role = 'Owner'
+                request.user.save()
+                response={
+                    "message": "Tenant created successfully",
+                    "tenant": serializer.data
+                }
+                response['tenant']['subscription_tier'] = subscription_tier
+                return Response(response, status=201)
+        except Exception as e:
+            print(f"Error occurred: {e}")
             response={
-                "message": "Tenant created successfully",
-                "tenant": serializer.data
+                "message": "Tenant creation failed",
+                "errors": serializer.errors
             }
-            return Response(response, status=201)
-        response={
-            "message": "Tenant creation failed",
-            "errors": serializer.errors
-        }
-        return Response(response, status=400)
+            return Response(response, status=400)
 
 class TenantsRUDView(APIView):
     permission_classes = [IsAuthenticated, IsOwner]

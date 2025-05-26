@@ -10,7 +10,7 @@ SubscriptionTiers_Details={
     'projects':5,
   },
   'Enterprise': {
-    'price': 49.99,  # Monthly price in USD
+    'price': 29.99,  # Monthly price in USD
     'projects': None,  # Unlimited projects
   }
 }

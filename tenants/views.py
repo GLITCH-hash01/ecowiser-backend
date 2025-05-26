@@ -13,6 +13,7 @@ from billings.models import Billing
 from billings.serializers import BillingsSerializer
 from django.db import transaction
 from rest_framework.serializers import ValidationError
+from .tasks import get_usage_data
 # Create your views here
 class TenantsListView(ListAPIView):
     queryset = Tenant.objects.all()
@@ -273,3 +274,14 @@ class RoleToOwnerView(APIView):
         }
         return Response(response, status=200)
 
+class GenerateUsageReportView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminorOwner]
+    
+    def get(self, request):
+        tenant = request.user.tenant
+        if not tenant:
+            return Response({"message": "Tenant not found"}, status=404)
+
+        get_usage_data.delay(tenant.id)
+
+        return Response({"message": "Usage report will be sent to your mail shortly"}, status=200)

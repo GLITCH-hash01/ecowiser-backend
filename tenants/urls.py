@@ -10,5 +10,6 @@ urlpatterns=[
     path('members/to-admin/',views.RoleToAdminView.as_view(), name='tenants-role-to-admin'),
     path('members/to-owner/',views.RoleToOwnerView.as_view(), name='tenants-role-to-owner'),
     path('members/to-member/',views.RoleToMemberView.as_view(), name='tenants-role-to-member'),
+    path('generate-usage-report/', views.GenerateUsageReportView.as_view(), name='tenants-generate-usage-report'),
 
 ]

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Usage Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f6f9fc;
+      color: #333;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+    }
+    .header h2 {
+      margin: 0;
+      color: #4a90e2;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .footer {
+      margin-top: 25px;
+      font-size: 13px;
+      text-align: center;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>{{ tenant_name }} - Daily Usage Report</h2>
+      <p>Subscription Tier: <strong>{{ subscription_tier }}</strong></p>
+      <p>Date: {{ report_date }}</p>
+    </div>
+
+    <table>
+      <tr>
+        <th>Metric</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Projects</td>
+        <td>{{ project_count }}</td>
+      </tr>
+      <tr>
+        <td>Users</td>
+        <td>{{ users_count }}</td>
+      </tr>
+      <tr>
+        <td>CSV Files</td>
+        <td>{{ csv_count }}</td>
+      </tr>
+      <tr>
+        <td>Media Files (Total)</td>
+        <td>{{ media_total }}</td>
+      </tr>
+      <tr>
+        <td>– Public</td>
+        <td>{{ media_public }}</td>
+      </tr>
+      <tr>
+        <td>– Private</td>
+        <td>{{ media_private }}</td>
+      </tr>
+      <tr>
+        <td>Total Storage Used</td>
+        <td>{{ storage_used }}</td>
+      </tr>
+    </table>
+
+    <div class="footer">
+      This is a simulated invoice for reporting purposes only. <br />
+      Thank you for using our platform.
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice - {{ invoice.invoice_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.07);
+        }
+        h2 {
+            color: #333;
+        }
+        .invoice-header {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .invoice-info {
+            margin-bottom: 20px;
+        }
+        .invoice-info p {
+            margin: 5px 0;
+        }
+        .amount {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2e8b57;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="invoice-header">
+            <h2>Invoice: {{ invoice.invoice_id }}</h2>
+            <p><strong>Issued:</strong> {{ invoice.issued_at|date:"F j, Y" }}</p>
+        </div>
+
+        <div class="invoice-info">
+            <p><strong>Tenant:</strong> {{ invoice.tenant.name }}</p>
+            <p><strong>Subscription Tier:</strong> {{ invoice.subscription_id.subscription_tier }}</p>
+            <p><strong>Billing Period:</strong> {{ invoice.billing_start_date|date:"F j, Y" }} to {{ invoice.billing_end_date|date:"F j, Y" }}</p>
+            <p class="amount">Total Amount: ₹ {{ invoice.amount }}</p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for your continued support.</p>
+            <p>If you have any questions, reply to this email or contact our billing support team.</p>
+        </div>
+    </div>
+</body>
+</html>

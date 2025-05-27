@@ -1,7 +1,6 @@
 from celery import shared_task
 from .models import Tenant
 from projects.models import Project
-from billings.models import Billing
 from resources.models import Media, CSVTables
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -55,7 +54,7 @@ def get_usage_data(tenant_id):
     subject=subject,
     body=html,
     from_email="Ecowiser <harikichus2004@gmail.com>",
-    to=["harikichus2018@gmail.com"],
+    to=[tenant.contact_email],
 
   )
   email.content_subtype = "html"
@@ -66,41 +65,8 @@ def get_usage_data(tenant_id):
 def send_usage_report_to_all():
     t=timezone.now()
     tenants = Tenant.objects.filter(
-       billing__subscription_start_date__lte=t,
-        billing__subscription_end_date__gte=t
-    ).distinct()
+        subscription_tier__in=[ 'Enterprise', 'Pro'],)
     for tenant in tenants:
       get_usage_data(tenant.id)
     return "Usage report sent to all tenants"
 
-@shared_task
-def billing_invoice(tenant_id, billing_id,old_plan,action):
-    tenant = Tenant.objects.get(id=tenant_id)
-    billing = Billing.objects.get(bill_id=billing_id)
-
-    context={
-       "tenant":{
-          "name":tenant.name,
-          "admin_name":"Harikrishna A",
-          "admin_email":"Harikichus2018@gmail.com"
-       },
-       "bill_id":billing.bill_id,
-       "old_plan":old_plan,
-       "new_plan":billing.subscription_tier,
-       "action":action,
-       "change_date":billing.subscription_start_date.strftime("%Y-%m-%d"),
-       "new_price":billing.price,
-       "support_email":"support@ecowiser.com"
-    }
-    html = render_to_string("tenants/subscription_invoice.html", context)
-
-    email =EmailMessage(
-       subject=f"Billing Invoice for {tenant.name}",
-        body=html,
-        from_email="Ecowiser <harikichus2004@gmail.com>",
-        to=["harikichus2018@gmail.com"],
-    )
-    email.content_subtype = "html"
-    email.send()
-
-    return "Billing invoice sent successfully"

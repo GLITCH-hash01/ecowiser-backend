@@ -2,15 +2,19 @@ from django.shortcuts import render
 from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from django.contrib.auth.password_validation import validate_password
 from .serializers import UserSerializer
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from .permissions import IsAdmin,IsOwner,IsMemberofTenant,AdminOwnerPrivilages
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
-
+# @method_decorator(csrf_exempt, name='dispatch')
 class UsersCreateView(APIView):
+    permission_classes=[AllowAny]
     def post(self, request):
+        print("Routes is working")
         data = request.data
         if 'password' not in data or not data['password']:
             return Response({"message": "Password is required"}, status=400)

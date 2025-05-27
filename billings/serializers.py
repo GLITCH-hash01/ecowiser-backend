@@ -1,8 +1,14 @@
 from rest_framework.serializers import ModelSerializer,BooleanField,DateTimeField
-from .models import Billing
+from .models import Subscription,Invoices
 
-class BillingsSerializer(ModelSerializer):
-  is_active=BooleanField(read_only=True)
+class SubscriptionSerializer(ModelSerializer):
   class Meta:
-    model = Billing
-    fields=['bill_id','tenant','subscription_tier','subscription_start_date','subscription_cancel_date','price','is_active','subscription_end_date']
+    model = Subscription
+    fields = '__all__'
+    read_only_fields = ['created_at']
+
+class InvoicesSerializer(ModelSerializer):
+  class Meta:
+    model = Invoices
+    fields = '__all__'
+    read_only_fields = ['issued_at']

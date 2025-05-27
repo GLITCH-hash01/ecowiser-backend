@@ -6,7 +6,7 @@ from users.permissions import IsMember, IsOwner, IsAdminorOwner
 from .serializers import ProjectSerializer
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from .models import Project 
-from billings.subscriptions import SubscriptionTiers_Details
+from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
 # Create your views here.
 class CreateProjectView(APIView):
   permission_classes = [IsAuthenticated, IsAdminorOwner]
@@ -22,7 +22,7 @@ class CreateProjectView(APIView):
     # Check if the user has reached the project limit for their subscription tier
     current_project_count=request.user.tenant.projects.count()
     print(request.user.tenant.subscription_tier)
-    subscription_tier_limit= SubscriptionTiers_Details[request.user.tenant.subscription_tier]['projects']
+    subscription_tier_limit= SUBSCRIPTION_TIERS_DETAILS[request.user.tenant.subscription_tier]['projects']
     if subscription_tier_limit is not None:
       if current_project_count >= subscription_tier_limit:
         return Response({"message": "Project limit reached for your subscription tier"}, status=400)

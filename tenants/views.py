@@ -9,11 +9,14 @@ from users.serializers import UserSerializer
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.permissions import IsAuthenticated
 from users.permissions import IsMember,IsOwner,IsAdminorOwner
-from billings.models import Billing
-from billings.serializers import BillingsSerializer
+from billings.models import Subscription, Invoices
+from billings.serializers import SubscriptionSerializer,InvoicesSerializer
 from django.db import transaction
+from django.utils import timezone
 from rest_framework.serializers import ValidationError
 from .tasks import get_usage_data
+from billings.tasks import mail_invoice
+from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
 # Create your views here
 class TenantsListView(ListAPIView):
     queryset = Tenant.objects.all()
@@ -21,6 +24,7 @@ class TenantsListView(ListAPIView):
 
 class TenantsCreateView(APIView):
     permission_classes = [IsAuthenticated, IsMember]
+
     def post(self, request):
         data = request.data
         if request.user.tenant:
@@ -41,15 +45,37 @@ class TenantsCreateView(APIView):
                     raise ValidationError(response, status=400)
                 
                 # Creating the Billing record
-                billing_serializer = BillingsSerializer(data={
-                    "tenant": tenant.id,
-                    "subscription_tier": subscription_tier
-                })
-                if billing_serializer.is_valid():
-                    billing_serializer.save()
+                subscription=SubscriptionSerializer(
+                    data={
+                        "tenant": tenant.id,
+                        "subscription_tier": subscription_tier,
+                        "next_subscription_tier": subscription_tier,
+                    }
+                )
+                if subscription.is_valid():
+                    subscription.save()
                 else: 
                     response={
-                        "message": "Billing record creation failed",
+                        "message": "Subscription record creation failed",
+                    }
+                    raise ValidationError(response)
+                invoice=InvoicesSerializer(
+                    data={
+                        "tenant": tenant.id,
+                        "subscription_id": subscription.instance.id,
+                        "amount":SUBSCRIPTION_TIERS_DETAILS[subscription_tier]['price'],
+                        "billing_start_date": subscription.instance.current_cycle_start_date,
+                        "billing_end_date": subscription.instance.current_cycle_end_date
+                    })
+                if invoice.is_valid():
+                    invoice.save()
+                    mail_invoice.delay(
+                        tenant_id=tenant.id, 
+                        invoice_id=invoice.instance.invoice_id
+                    )
+                else:
+                    response={
+                        "message": "Invoice record creation failed",
                     }
                     raise ValidationError(response)
 

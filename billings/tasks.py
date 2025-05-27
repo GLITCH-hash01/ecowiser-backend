@@ -93,8 +93,6 @@ def project_deletion_warning_mail(tenant_id,new_tier):
       email.content_subtype = "html"
       email.send()
 
-
-
 @shared_task(name="renew_subscription")
 def renew_subscription():
   subscriptions= Subscription.objects.all()

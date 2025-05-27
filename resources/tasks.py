@@ -103,7 +103,6 @@ def delete_media_file(file_key):
         print(f"Error deleting media file {file_key}: {e}")
         raise
 
-
 @shared_task(name="handle_csv")
 def handle_csv(file_path,project_id, csv_id,file_name):
   s3 = boto3.client(

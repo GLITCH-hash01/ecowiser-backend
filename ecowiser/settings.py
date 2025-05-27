@@ -149,6 +149,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL= 'users.User'
 REST_FRAMEWORK ={
+  'DEFAULT_RENDERER_CLASSES': [
+    'utils.renderers.CustomJSONRenderer',
+  ],
   "DEFAULT_AUTHENTICATION_CLASSES": [
     'rest_framework.authentication.SessionAuthentication',
     'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -156,7 +159,10 @@ REST_FRAMEWORK ={
   'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
   'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
   'PAGE_SIZE': 15,
+  'EXCEPTION_HANDLER': 'utils.exceptions.custom_exception_handler'
 }
+
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),

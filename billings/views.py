@@ -17,6 +17,7 @@ class SubscriptionUpgradeView(APIView):
         tenant = request.user.tenant
         if not tenant:
             return Response({"error": "Tenant not found"}, status=404)
+        
         current_tier = tenant.subscriptions.subscription_tier
         new_tier = request.data.get('subscription_tier', None)
         if not new_tier:

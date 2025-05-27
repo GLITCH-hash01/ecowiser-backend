@@ -70,7 +70,6 @@ def send_usage_report_to_all():
       get_usage_data(tenant.id)
     return "Usage report sent to all tenants"
 
-
 @shared_task(name="auto_project_deletion")
 def auto_project_deletion():
   tenants=Tenant.objects.filter(subscriptions__subscription_tier__in=['Free', 'Pro']).distinct()

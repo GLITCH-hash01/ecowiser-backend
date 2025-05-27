@@ -31,13 +31,7 @@ class CreateProjectView(APIView):
       return Response({"message": "Project creation failed", "errors": serializer.errors}, status=400)
     serializer.save()
     data = serializer.data
-
-
-    response = {
-      "message": "Project created successfully",
-      "data": data  # This should be replaced with actual project data
-    }
-    return Response(response, status=201)
+    return Response(data, status=201)
 
 class ProjectsListView(ListAPIView):
   permission_classes = [IsAuthenticated, IsMember]

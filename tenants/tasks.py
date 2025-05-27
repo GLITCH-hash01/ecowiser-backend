@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.core.mail import EmailMessage
 from django.db.models import Sum
+from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
 
 @shared_task(name="send_usage_report")
 def get_usage_data(tenant_id):
@@ -69,3 +70,37 @@ def send_usage_report_to_all():
       get_usage_data(tenant.id)
     return "Usage report sent to all tenants"
 
+
+@shared_task(name="auto_project_deletion")
+def auto_project_deletion():
+  tenants=Tenant.objects.filter(subscriptions__subscription_tier__in=['Free', 'Pro']).distinct()
+  for tenant in tenants:
+    try:
+      project_count = tenant.projects.count()
+      allowed_projects = SUBSCRIPTION_TIERS_DETAILS[tenant.subscriptions.subscription_tier]['projects']
+      extra_projects = project_count - allowed_projects
+      if extra_projects > 0:
+        nw = timezone.now()
+        start = tenant.subscriptions.current_cycle_start_date
+        if (nw - start).days >= 10:
+          list_of_projects = tenant.projects.order_by('created_at')[:extra_projects]
+          list_of_projects.delete()
+          context={
+            "tenant_name": tenant.name,
+            "subscription_tier": tenant.subscriptions.subscription_tier,
+            "deleted_projects": list_of_projects,
+          }
+          html=render_to_string('tenants/project_deleted.html', context)
+          subject = f"Project Deletion Notification for {tenant.name}"
+          email = EmailMessage(
+            subject=subject,
+            body=html,
+            from_email="Ecowiser <harikichus2004@gmail.com>",
+            to=[tenant.contact_email],
+          )
+          email.content_subtype = "html"
+          email.send()
+    except Exception as e:
+      print(f"Error occurred while deleting projects for tenant {tenant.id}: {e}")
+  return "Auto project deletion task completed successfully"
+    

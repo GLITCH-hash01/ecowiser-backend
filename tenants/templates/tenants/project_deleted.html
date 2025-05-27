@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Automatic Project Deletion Notice</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: #333;
+        padding: 20px;
+      }
+      .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        max-width: 600px;
+        margin: auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      }
+      h2 {
+        color: #2a7ae2;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 14px;
+        color: #888;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-top: 20px;
+        background-color: #2a7ae2;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Important: Projects Automatically Deleted</h2>
+      <p>Dear {{ tenant_name }},</p>
+
+      <p>
+        As part of our system cleanup and in accordance with your current subscription tier
+        (<strong>{{ subscription_tier }}</strong>), your account exceeded the allowed number of projects.
+        Since the issue was not addressed within 10 days of notice, the following oldest projects have
+        been deleted from your workspace:
+      </p>
+
+      <ul>
+        {% for project in deleted_projects %}
+        <li>{{ project.name }} (Created at: {{ project.created_at|date:"F j, Y" }})</li>
+        {% endfor %}
+      </ul>
+
+      <p>
+        We recommend reviewing your remaining projects and upgrading your subscription
+        if you need to manage more projects in the future.
+      </p>
+
+      <!-- <a href="{{ upgrade_link }}" class="button">Upgrade Plan</a> -->
+
+      <p class="footer">
+        If you believe this was an error or have any questions, please contact support.
+      </p>
+    </div>
+  </body>
+</html>

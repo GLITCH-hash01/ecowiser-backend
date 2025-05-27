@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Action Required: Projects at Risk of Deletion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f7;
+            padding: 0;
+            margin: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.07);
+        }
+        h2 {
+            color: #c0392b;
+        }
+        p {
+            color: #333;
+            line-height: 1.5;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .warning {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #999;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: #2e86de;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #1b4f72;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>⚠️ Action Required: Projects Scheduled for Deletion</h2>
+        <p>We’ve detected that your current subscription plan has exceeded its allowed project limit. As a result, the following projects are at risk of being <span class="warning">deleted in 10 days</span> unless action is taken:</p>
+
+        <ul>
+            {% for project in projects %}
+                <li>{{ project.name }} (Created on {{ project.created_at|date:"F j, Y" }})</li>
+            {% endfor %}
+        </ul>
+
+        <p>Please <strong>upgrade your plan</strong> or <strong>manually delete the excess projects</strong> to avoid data loss.</p>
+
+        <!-- <a href="{{ upgrade_link }}" class="button">Upgrade Plan</a> -->
+
+        <div class="footer">
+            <p>This is an automated message. If you have any questions, please reach out to our support team.</p>
+        </div>
+    </div>
+</body>
+</html>

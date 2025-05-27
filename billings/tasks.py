@@ -5,6 +5,8 @@ from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
+TIER_ORDER= ['Free', 'Pro', 'Enterprise']
+
 @shared_task(name="mail_invoice")
 def mail_invoice(tenant_id, invoice_id):
 
@@ -63,11 +65,43 @@ def upgrade_tier(tenant_id, new_tier):
     mail_invoice.delay(tenant_id=subscription.tenant.id, invoice_id=invoice.invoice_id)
     return f"Tenant {subscription.tenant.name} upgraded to {new_tier} tier."
 
+@shared_task(name="project_deletion_warning_mail")
+def project_deletion_warning_mail(tenant_id,new_tier):
+    """
+    Send a warning email to the tenant about project deletion due to subscription downgrade.
+    """
+    subscription = Subscription.objects.get(tenant_id=tenant_id)
+    tenant = subscription.tenant
+    project_count = tenant.projects.count()
+    diff=project_count- SUBSCRIPTION_TIERS_DETAILS[new_tier]['projects']
+    if diff <= 0:
+        return
+    else:
+      projects_to_delete = tenant.projects.order_by('created_at')[:diff]
+      context = {
+          "projects": projects_to_delete
+      }
+      html = render_to_string("billings/project_deletion_warning.html", context)
+      subject = f"Project Deletion Warning for {tenant.name}"
+
+      email = EmailMessage(
+          subject=subject,
+          body=html,
+          from_email="Ecowiser <harikichus2004@gmail.com>",
+          to=[tenant.contact_email],
+      )
+      email.content_subtype = "html"
+      email.send()
+
+
+
 @shared_task(name="renew_subscription")
 def renew_subscription():
   subscriptions= Subscription.objects.all()
   for subscription in subscriptions:
     nw=timezone.now().date()
+    old_tier = subscription.subscription_tier
+    new_tier = subscription.next_subscription_tier
     if nw >= subscription.current_cycle_end_date.date():
       new_start_date = subscription.current_cycle_end_date
       new_end_date = new_start_date + timezone.timedelta(days=30)
@@ -86,8 +120,18 @@ def renew_subscription():
         )
         mail_invoice.delay(tenant_id=subscription.tenant.id, invoice_id=invoice.invoice_id)
       else:
+        new_tier="Free"
         subscription.subscription_tier = "Free"
         subscription.next_subscription_tier = "Free"
         subscription.auto_renew = False
         subscription.save()
+    
+    is_downgrade = TIER_ORDER.index(new_tier) < TIER_ORDER.index(old_tier)
+    if is_downgrade:
+        project_deletion_warning_mail.delay(
+            tenant_id=subscription.tenant.id,
+            new_tier=new_tier,
+            old_tier=old_tier
+        )
+        
    

@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+app_name = 'resources'
 urlpatterns = [
     path('upload/', views.UploadMediaView.as_view(), name='upload_media'),
     path('media/<uuid:project_id>/', views.MediaListView.as_view(), name='media_list'),

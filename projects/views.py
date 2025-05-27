@@ -2,12 +2,12 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users.permissions import IsMember, IsOwner, IsAdminorOwner
+from users.permissions import IsMember, IsAdminorOwner
 from .serializers import ProjectSerializer
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView,ListAPIView
 from .models import Project 
 from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
-# Create your views here.
+
 class CreateProjectView(APIView):
   permission_classes = [IsAuthenticated, IsAdminorOwner]
   def post(self, request):
@@ -21,8 +21,7 @@ class CreateProjectView(APIView):
 
     # Check if the user has reached the project limit for their subscription tier
     current_project_count=request.user.tenant.projects.count()
-    print(request.user.tenant.subscription_tier)
-    subscription_tier_limit= SUBSCRIPTION_TIERS_DETAILS[request.user.tenant.subscription_tier]['projects']
+    subscription_tier_limit= SUBSCRIPTION_TIERS_DETAILS[request.user.tenant.subscriptions.subscription_tier]['projects']
     if subscription_tier_limit is not None:
       if current_project_count >= subscription_tier_limit:
         return Response({"message": "Project limit reached for your subscription tier"}, status=400)
@@ -40,21 +39,14 @@ class CreateProjectView(APIView):
     }
     return Response(response, status=201)
 
-class ProjectsListView(APIView):
+class ProjectsListView(ListAPIView):
   permission_classes = [IsAuthenticated, IsMember]
-  
-  def get(self, request):
-    if request.user.tenant is None:
-      return Response({"message": "User does not belong to a tenant"}, status=400)
-    
-    projects = Project.objects.filter(tenant=request.user.tenant)
-    serializer = ProjectSerializer(projects, many=True)
-    
-    response = {
-      "message": "Projects retrieved successfully",
-      "projects": serializer.data
-    }
-    return Response(response, status=200)
+  serializer_class = ProjectSerializer
+
+  def get_queryset(self):
+    if self.request.user.tenant is None:
+      return Project.objects.none()
+    return Project.objects.filter(tenant=self.request.user.tenant)
 
 class ProjectRUDView(RetrieveUpdateDestroyAPIView):
   permission_classes = [IsAuthenticated, IsAdminorOwner]

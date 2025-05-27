@@ -25,7 +25,6 @@ def mail_invoice(tenant_id, invoice_id):
   
   return f"Invoice email sent to {innvoice.tenant.contact_email} for invoice {invoice_id}."
     
-
 @shared_task(name="upgrade_subscription_tier")
 def upgrade_tier(tenant_id, new_tier):
     

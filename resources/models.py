@@ -1,8 +1,5 @@
 from django.db import models
-from .utils import create_signed_url
-import ecowiser.settings as settings
 
-# Create your models here.
 class Media(models.Model):
     """
     This model represents a media file in the system.
@@ -61,3 +58,8 @@ class CSVTables(models.Model):
     def __str__(self):
         return self.name
 
+    def delete(self, *args, **kwargs):
+        # Delete the file from storage
+        if self.file:
+            self.file.delete(save=False)
+        super().delete(*args, **kwargs)

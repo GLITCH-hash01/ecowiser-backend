@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views 
-app_name = 'billings'
 
+app_name = 'billings'
 urlpatterns = [
    path('upgrade/',views.SubscriptionUpgradeView.as_view(), name='upgrade-subscription'),
    path('downgrade/',views.SubscriptionDowngradeView.as_view(), name='downgrade-subscription'),

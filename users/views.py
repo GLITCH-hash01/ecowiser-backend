@@ -1,16 +1,14 @@
-from django.shortcuts import render
 from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from django.contrib.auth.password_validation import validate_password
 from .serializers import UserSerializer
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
-from .permissions import IsAdmin,IsOwner,IsMemberofTenant,AdminOwnerPrivilages
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from rest_framework.generics import RetrieveAPIView, RetrieveUpdateDestroyAPIView
+from .permissions import AdminOwnerPrivilages
 
-# @method_decorator(csrf_exempt, name='dispatch')
+
+
 class UsersCreateView(APIView):
     permission_classes=[AllowAny]
     def post(self, request):
@@ -37,7 +35,7 @@ class UsersCreateView(APIView):
         return Response(response, status=400)
     
 
-class UsersRUDView(RetrieveUpdateDestroyAPIView):
+class UsersRView(RetrieveAPIView):
     permission_classes=[IsAuthenticated,AdminOwnerPrivilages]
     queryset = User.objects.all()
     serializer_class = UserSerializer

@@ -1,10 +1,10 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import MediaSerializer, CSVTablesSerializer
 from rest_framework.permissions import IsAuthenticated
+from users.permissions import ProjectBelongsToTenant,MediaBelongsToTenant
 from .models import Media,CSVTables 
-from .tasks import change_visibilty_file,delete_media_file
+from .tasks import change_visibility_file,delete_media_file
 from ecowiser import settings
 
 class UploadMediaView(APIView):
@@ -20,7 +20,7 @@ class UploadMediaView(APIView):
         return Response(serializer.errors, status=400)
 
 class MediaListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ProjectBelongsToTenant]
 
     def get(self, request , project_id):
         name=request.query_params.get('name', None)
@@ -36,7 +36,7 @@ class MediaListView(APIView):
 
 
 class MediaSetVisibilityView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,MediaBelongsToTenant]
 
     def post(self, request, id):
         try:
@@ -51,10 +51,11 @@ class MediaSetVisibilityView(APIView):
             # if visibility == resource.visibility:
             #     return Response({"message": "Visibility is already set to this value"}, status=200)
             resource.visibility = visibility
-            url=resource.file_url.lstrip(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
-            thumb_url=resource.thumb_url.lstrip(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
-            change_visibilty_file.delay(url, visibility)
-            change_visibilty_file.delay(thumb_url, visibility)
+            url=resource.file_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+            print(url)
+            thumb_url=resource.thumb_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+            change_visibility_file.delay(url, visibility)
+            change_visibility_file.delay(thumb_url, visibility)
             resource.save()
             serializer = MediaSerializer(resource)
             return Response(serializer.data, status=200)
@@ -62,7 +63,7 @@ class MediaSetVisibilityView(APIView):
             return Response({"error": "Resource not found"}, status=404)
         
 class MediaDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,MediaBelongsToTenant]
 
     def delete(self, request, id):
         try:
@@ -72,10 +73,10 @@ class MediaDetailView(APIView):
             if not resource:
                 return Response({"error": "Resource not found"}, status=404)
             if resource.file_url:
-                url_key = resource.file_url.lstrip(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+                url_key = resource.file_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
                 delete_media_file.delay(url_key)
             if resource.thumb_url:
-                thumb_key = resource.thumb_url.lstrip(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+                thumb_key = resource.thumb_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
                 delete_media_file.delay(thumb_key)
             resource.delete()
             return Response({"message": "Resource deleted successfully"}, status=204)
@@ -122,3 +123,19 @@ class CSVTableView(APIView):
             resources = CSVTables.objects.filter(project__id=project_id)
             serializer = CSVTablesSerializer(resources, many=True)
         return Response(serializer.data)
+    
+    def delete(self, request):
+        id= request.query_params.get('id', None)
+        if not id:
+            return Response({"error": "ID is required"}, status=400)
+        try:
+            resource = CSVTables.objects.get(id=id)
+            if resource.project.tenant.id != request.user.tenant.id:
+                return Response({"error": "You do not have permission to delete this resource"}, status=403)
+            if not resource:
+                return Response({"error": "Resource not found"}, status=404)
+            delete_media_file.delay(resource.file_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'))
+            resource.delete()
+            return Response({"message": "Resource deleted successfully"}, status=204)
+        except CSVTables.DoesNotExist:
+            return Response({"error": "Resource not found"}, status=404)

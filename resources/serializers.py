@@ -19,7 +19,7 @@ class MediaSerializer(ModelSerializer):
             return instance.file_url
         else:
             print("Retrieving signed URL for private file")
-            file_url=instance.file_url.lstrip(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+            file_url=instance.file_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
             return create_signed_url(file_url, expiration=3600)
 
     def get_thumb_url(self,instance):
@@ -28,7 +28,7 @@ class MediaSerializer(ModelSerializer):
         if instance.visibility == 'Public':
             return instance.thumb_url
         else:
-            thumb_url=instance.thumb_url.lstrip(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+            thumb_url=instance.thumb_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
             return create_signed_url(thumb_url, expiration=3600)
         
 class CSVTablesSerializer(ModelSerializer):
@@ -43,6 +43,6 @@ class CSVTablesSerializer(ModelSerializer):
     def get_file_url(self, instance):
         if not instance.file_url:
             return None
-        file_url = instance.file_url.lstrip(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+        file_url = instance.file_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
         return create_signed_url(file_url, expiration=3600)
     

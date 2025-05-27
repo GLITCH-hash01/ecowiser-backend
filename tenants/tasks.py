@@ -1,13 +1,12 @@
 from celery import shared_task
 from .models import Tenant
 from projects.models import Project
-from resources.models import Media, CSVTables
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.core.mail import EmailMessage
 from django.db.models import Sum
 
-@shared_task
+@shared_task(name="send_usage_report")
 def get_usage_data(tenant_id):
   tenant= Tenant.objects.get(id=tenant_id)
   projects = Project.objects.filter(tenant=tenant)
@@ -39,7 +38,7 @@ def get_usage_data(tenant_id):
   subject = f"Usage Report for {tenant.name}"
   html = render_to_string("tenants/usage_report.html", {
       "tenant_name": tenant.name,
-      "subscription_tier": tenant.subscription_tier,
+      "subscription_tier": tenant.subscriptions.subscription_tier,
       "report_date": timezone.now().strftime("%Y-%m-%d"),
       "users_count": user_count,
       "project_count": project_count,
@@ -61,7 +60,7 @@ def get_usage_data(tenant_id):
   email.send()
   return "Email sent successfully"
 
-@shared_task
+@shared_task(name="send_usage_report_to_all")
 def send_usage_report_to_all():
     t=timezone.now()
     tenants = Tenant.objects.filter(

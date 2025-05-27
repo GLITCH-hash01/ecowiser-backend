@@ -10,7 +10,7 @@ def upload_media_after_save(sender, instance, created, **kwargs):
         file_path = instance.file.path
         file_name = instance.file.name.split('/')[-1]
         visibility = instance.visibility
-        upload_media_and_thumbnail.delay(file_path, file_name, str(instance.id), project_id, visibility)  # or .apply() if not using Celery
+        upload_media_and_thumbnail.delay(file_path, file_name, str(instance.id), project_id, visibility)  
 
 @receiver(post_save, sender=CSVTables)
 def upload_csv_after_save(sender, instance, created, **kwargs):
@@ -18,4 +18,4 @@ def upload_csv_after_save(sender, instance, created, **kwargs):
         project_id = instance.project.id 
         file_path = instance.file.path
         file_name = instance.file.name.split('/')[-1]
-        handle_csv.delay(file_path, file_name, str(instance.id), project_id)
+        handle_csv.delay(file_path, project_id, str(instance.id),file_name)

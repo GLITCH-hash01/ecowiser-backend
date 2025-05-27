@@ -1,9 +1,11 @@
 from django.db import models
 import uuid
-from django.contrib.auth.hashers import make_password, check_password
-from .storage import PublicLogoStorage
-from django.utils import timezone
-from billings.models import Subscription
+from storages.backends.s3boto3 import S3Boto3Storage
+
+class PublicLogoStorage(S3Boto3Storage):
+    location = 'tenant_logos'
+    default_acl = 'public-read'
+    file_overwrite = False
 
 # Sets the file name as the tenant's UUID with the original file extension
 def tenant_logo_upload_path(instance, filename):
@@ -30,3 +32,16 @@ class Tenant(models.Model):
         if self.logo and self.logo.name:
             self.logo.delete(save=False)
         super().delete(*args, **kwargs)
+    
+    def update(self, *args, **kwargs):
+        # Delete the old logo file if a new one is being uploaded
+        if 'logo' in kwargs and self.logo:
+            self.logo.delete(save=False)
+        super().update(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = Tenant.objects.filter(pk=self.pk).first()
+            if old and old.logo and self.logo and old.logo.name != self.logo.name:
+                old.logo.delete(save=False)
+        super().save(*args, **kwargs)

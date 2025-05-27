@@ -1,14 +1,10 @@
-from django.shortcuts import render
-from django.db.models import Q
-from tenants.models import Tenant
-from .models import Subscription, Invoices
-from .serializers import SubscriptionSerializer,InvoicesSerializer
+from .models import Invoices
+from .serializers import InvoicesSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
-from users.permissions import IsMember, IsOwner, IsAdmin
-from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
+from users.permissions import IsOwner, IsAdmin
 from .tasks import upgrade_tier
 from rest_framework.generics import ListAPIView
 

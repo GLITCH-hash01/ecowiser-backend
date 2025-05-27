@@ -13,6 +13,7 @@ from .tasks import get_usage_data
 from billings.tasks import mail_invoice
 from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.pagination import PageNumberPagination
 
 
 class TenantsCreateView(APIView):
@@ -163,13 +164,14 @@ class ManageMembersView(APIView):
             return Response({"message": "Tenant not found"}, status=404)
 
         members = User.objects.filter(tenant=tenant)
-        serializer = UserSerializer(members, many=True)
-        response = {
-            "message": "Members retrieved successfully",
-            "members": serializer.data
-        }
-        return Response(response, status=200)
-    
+
+        paginator= PageNumberPagination()
+        result_page= paginator.paginate_queryset(members, request)
+        serializer = UserSerializer(result_page, many=True)
+      
+        return paginator.get_paginated_response(serializer.data)
+
+
 class ManageUsersRoleView(APIView):
     permission_classes = [IsAuthenticated, IsAdminorOwner]
     

@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from users.permissions import ProjectBelongsToTenant,MediaBelongsToTenant
 from .models import Media,CSVTables 
 from .tasks import change_visibility_file,delete_media_file
+from rest_framework.pagination import PageNumberPagination
 from ecowiser import settings
 
 class UploadMediaView(APIView):
@@ -27,13 +28,13 @@ class MediaListView(APIView):
         if name:
           resources = Media.objects.filter(project__id=project_id, name__icontains=name).first()
           if not resources:
-            return Response({"error": "Resource not found"}, status=404)
-          serializer = MediaSerializer(resources)
+            return Response({"error": "Resource not found"}, status=404)          
         else:
           resources = Media.objects.filter(project__id=project_id)
-          serializer = MediaSerializer(resources, many=True)
-        return Response(serializer.data)
-
+        paginator= PageNumberPagination()
+        result_page= paginator.paginate_queryset(resources, request)
+        serializer = MediaSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 class MediaSetVisibilityView(APIView):
     permission_classes = [IsAuthenticated,MediaBelongsToTenant]
@@ -122,7 +123,14 @@ class CSVTableView(APIView):
         else:
             resources = CSVTables.objects.filter(project__id=project_id)
             serializer = CSVTablesSerializer(resources, many=True)
-        return Response(serializer.data)
+        
+        paginator = PageNumberPagination()
+        result_page = paginator.paginate_queryset(resources, request)
+        serializer = CSVTablesSerializer(result_page, many=True)
+        if paginator.get_page_size(request) == 0:
+            return Response({"error": "No resources found"}, status=404)
+        
+        return paginator.get_paginated_response(serializer.data)
     
     def delete(self, request):
         id= request.query_params.get('id', None)

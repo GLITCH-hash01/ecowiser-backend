@@ -163,7 +163,7 @@ class ManageMembersView(APIView):
         except Tenant.DoesNotExist:
             return Response({"message": "Tenant not found"}, status=404)
 
-        members = User.objects.filter(tenant=tenant)
+        members = User.objects.filter(tenant=tenant).order_by('role')
 
         paginator= PageNumberPagination()
         result_page= paginator.paginate_queryset(members, request)

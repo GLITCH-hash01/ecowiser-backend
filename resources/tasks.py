@@ -52,6 +52,10 @@ def upload_media_and_thumbnail(file_path, file_name, media_id, project_id,visibi
             if os.path.exists(thumbnail_path):
                 os.remove(thumbnail_path)
 
+        elif mime_type and mime_type.startswith('video/'):
+            # For videos, we can skip thumbnail creation or handle it differently
+            thumb_url = None
+        
         file_size = os.path.getsize(file_path) if os.path.exists(file_path) else None # bytes
         if os.path.exists(file_path):
             os.remove(file_path)

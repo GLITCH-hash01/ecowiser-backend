@@ -30,7 +30,7 @@ class MediaListView(APIView):
           if not resources:
             return Response({"error": "Resource not found"}, status=404)          
         else:
-          resources = Media.objects.filter(project__id=project_id)
+          resources = Media.objects.filter(project__id=project_id).order_by('-created_at')
         paginator= PageNumberPagination()
         result_page= paginator.paginate_queryset(resources, request)
         serializer = MediaSerializer(result_page, many=True)
@@ -121,7 +121,7 @@ class CSVTableView(APIView):
                 return Response({"error": "Resource not found"}, status=404)
             serializer = CSVTablesSerializer(resources)
         else:
-            resources = CSVTables.objects.filter(project__id=project_id)
+            resources = CSVTables.objects.filter(project__id=project_id).order_by('-created_at')
             serializer = CSVTablesSerializer(resources, many=True)
         
         paginator = PageNumberPagination()

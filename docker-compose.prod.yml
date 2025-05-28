@@ -26,6 +26,7 @@ services:
     command: celery -A ecowiser worker -l info
     volumes:
       - .:/app
+      - media_volume:/app/media
     env_file:
       - ../.env
     depends_on:
@@ -37,6 +38,7 @@ services:
     command: celery -A ecowiser beat -l info
     volumes:
       - .:/app
+      - media_volume:/app/media
     depends_on:
       - redis
     env_file:

@@ -1,11 +1,8 @@
-version: "3.9"
 
 services:
   django:
     container_name: ecowiser_backend
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
+    image: 322680460472.dkr.ecr.us-east-1.amazonaws.com/ecowiser/backend:latest
     ports:
       - "8000:8000"
     env_file:
@@ -21,9 +18,7 @@ services:
   
   celery:
     container_name: ecowiser_celery
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
+    image: 322680460472.dkr.ecr.us-east-1.amazonaws.com/ecowiser/backend:latest
     command: celery -A ecowiser worker -l info
     volumes:
       - .:/app
@@ -34,9 +29,7 @@ services:
   
   celery-beat:
     container_name: ecowiser_celery_beat
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
+    image: 322680460472.dkr.ecr.us-east-1.amazonaws.com/ecowiser/backend:latest
     command: celery -A ecowiser beat -l info
     volumes:
       - .:/app

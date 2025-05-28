@@ -9,6 +9,9 @@ services:
       - ../.env
     depends_on:
       - redis
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
     restart: always
   
   redis:
@@ -39,3 +42,20 @@ services:
     env_file:
       - ../.env
     restart: always
+
+  nginx:
+    container_name: ecowiser_nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - django
+    restart: always
+
+volumes:
+  static_volume:
+  media_volume:

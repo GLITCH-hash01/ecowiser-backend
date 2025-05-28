@@ -1,6 +1,8 @@
 
 from django.contrib import admin
 from django.urls import path,include
+from django.conf.urls.static import static
+from . import settings
 
 handler404 = 'utils.error_views.custom_404'
 handler500 = 'utils.error_views.custom_500'
@@ -14,3 +16,6 @@ urlpatterns = [
     path('billings/',include('billings.urls')),
     path('resources/', include('resources.urls'))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

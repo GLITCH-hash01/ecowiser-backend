@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z%xu-+r-o-vh@=ma8vga*g2!o8niesqna_n4s*h!c*5=0eccdf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
+DEBUG = os.getenv('DEBUG', 0) == '1'
 
-ALLOWED_HOSTS = ['13.220.130.154']
+ALLOWED_HOSTS = ['13.220.130.154','127.0.0.1','172.31.83.23',]
 
 
 # Application definition
@@ -141,7 +141,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -195,4 +196,17 @@ SUBSCRIPTION_TIERS_DETAILS = {
     'price': 29.99,  # Monthly price in USD
     'projects': None,  # Unlimited projects
   }
+}
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console':{
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
 }

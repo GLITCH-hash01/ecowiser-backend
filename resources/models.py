@@ -17,6 +17,8 @@ class Media(models.Model):
     name = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    file_type =models.CharField(max_length=50, blank=True, null=True,choices=[
+        ('image', 'Image'),('video', 'Video')])
     updated_at = models.DateTimeField(auto_now=True)
     file_url = models.URLField(blank=True, null=True)
     thumb_url = models.URLField(blank=True, null=True)

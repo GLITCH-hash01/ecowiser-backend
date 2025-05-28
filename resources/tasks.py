@@ -31,7 +31,7 @@ def upload_media_and_thumbnail(file_path, file_name, media_id, project_id,visibi
 
         file_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{base_s3_path}/{unique_file_name}"
         thumb_url = None
-
+        file_type = mimetypes.guess_type(file_path)[0]
         mime_type, _ = mimetypes.guess_type(file_path)
         if mime_type and mime_type.startswith('image/'):
 
@@ -64,6 +64,7 @@ def upload_media_and_thumbnail(file_path, file_name, media_id, project_id,visibi
         media.file=None
         media.file_url = file_url
         media.file_size = file_size
+        media.file_type = file_type
         if thumb_url:
             media.thumb_url = thumb_url
         media.save(update_fields=['file_url', 'thumb_url','file','file_size'])

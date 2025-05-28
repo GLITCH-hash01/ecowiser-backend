@@ -24,7 +24,6 @@ class User(AbstractUser):
           ('Member', 'Member')
       ), default='Member', blank=False, null=False
   )
-  USERNAME_FIELD = 'email' # uses email as the unique identifier for authentication
-  REQUIRED_FIELDS = ['username'] # specifies that username is required when creating a user
+
   def __str__(self):
     return self.email

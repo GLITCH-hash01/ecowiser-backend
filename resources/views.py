@@ -104,6 +104,12 @@ class CSVTableView(APIView):
         data['uploaded_by'] = request.user.id
         if 'project' not in data:
             return Response({"error": "Project ID is required"}, status=400)
+        if request.files:
+            data['file'] = request.FILES.get('file')
+        if not data.get('file'):
+            return Response({"error": "File is required"}, status=400)
+        if data['file'].name.split('.')[-1].lower() != 'csv':
+            return Response({"error": "File must be a CSV"}, status=400)
         serializer = CSVTablesSerializer(data=data)
         if serializer.is_valid():
             serializer.save()

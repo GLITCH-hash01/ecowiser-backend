@@ -50,13 +50,17 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
+      - "443:443"               
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - static_volume:/app/static
       - media_volume:/app/media
+      - /etc/letsencrypt/live/api.harikrishna.me/fullchain.pem:/etc/letsencrypt/live/api.harikrishna.me/fullchain.pem:ro  # SSL cert
+      - /etc/letsencrypt/live/api.harikrishna.me/privkey.pem:/etc/letsencrypt/live/api.harikrishna.me/privkey.pem:ro      # SSL key
     depends_on:
       - django
     restart: always
+
 
 volumes:
   static_volume:

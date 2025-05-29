@@ -160,12 +160,14 @@ class ManageMembersView(APIView):
     def get(self,request):
         try:
             tenant = Tenant.objects.get(id=request.user.tenant.id)
+            
         except Tenant.DoesNotExist:
             return Response({"message": "Tenant not found"}, status=404)
 
         members = User.objects.filter(tenant=tenant).order_by('role')
 
         paginator= PageNumberPagination()
+        paginator.page_size = 5
         result_page= paginator.paginate_queryset(members, request)
         serializer = UserSerializer(result_page, many=True)
       

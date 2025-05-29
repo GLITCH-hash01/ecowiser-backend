@@ -100,14 +100,15 @@ class CSVTableView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        
         data= request.data.copy()
         data['uploaded_by'] = request.user.id
         if 'project' not in data:
             return Response({"error": "Project ID is required"}, status=400)
-        if request.files:
-            data['file'] = request.FILES.get('file')
+
         if not data.get('file'):
             return Response({"error": "File is required"}, status=400)
+        print(data['file'])
         if data['file'].name.split('.')[-1].lower() != 'csv':
             return Response({"error": "File must be a CSV"}, status=400)
         serializer = CSVTablesSerializer(data=data)

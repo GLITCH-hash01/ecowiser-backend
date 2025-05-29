@@ -1,5 +1,5 @@
 from .models import Invoices
-from .serializers import InvoicesSerializer
+from .serializers import InvoicesSerializer,SubscriptionSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -62,7 +62,19 @@ class SubscriptionDowngradeView(APIView):
         tenant.subscriptions.save()
 
         return Response({"message": f"Subscription will be downgraded to {new_tier} in the next billing cycle."}, status=200)
-    
+
+
+class SubscriptionDetailsView(APIView):
+    permission_classes = [IsAuthenticated, IsOwner | IsAdmin]
+
+    def get(self, request):
+        tenant = request.user.tenant
+        if not tenant:
+            return Response({"error": "Tenant not found"}, status=404)
+
+        serializer = SubscriptionSerializer(tenant.subscriptions)
+        return Response(serializer.data, status=200)
+
 class InvoiceListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsOwner | IsAdmin]
     serializer_class = InvoicesSerializer

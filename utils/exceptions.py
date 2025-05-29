@@ -5,6 +5,7 @@ from rest_framework import status
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
+    print(response)
 
     if response is not None:
         message = "Validation failed" if response.status_code == 400 else "Request failed"

@@ -43,7 +43,7 @@ class ProjectsListView(ListAPIView):
     return Project.objects.filter(tenant=self.request.user.tenant)
 
 class ProjectRUDView(RetrieveUpdateDestroyAPIView):
-  permission_classes = [IsAuthenticated, IsAdminorOwner]
+  permission_classes = [IsAuthenticated]
   queryset = Project.objects.all()
   serializer_class = ProjectSerializer
   lookup_field = 'id'

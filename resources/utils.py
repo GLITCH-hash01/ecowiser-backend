@@ -2,13 +2,14 @@ import boto3
 import ecowiser.settings as settings
 from PIL import Image
 
-
+# Create a thumbnail for an image file.
 def create_image_thumbnail(input_path, output_path, size=(200, 200)):
     """Create a thumbnail for an image file."""
     with Image.open(input_path) as img:
         img.thumbnail(size)
         img.save(output_path)
 
+# Generate a signed URL for accessing an S3 object.
 def create_signed_url( object_key, expiration=3600):
 
     s3_client = boto3.client(

@@ -10,6 +10,7 @@ from rest_framework.generics import ListAPIView
 
 TIER_ORDER = ['Free', 'Pro', 'Enterprise']
 
+# View to handle subscription upgrades 
 class SubscriptionUpgradeView(APIView):
     permission_classes = [IsAuthenticated, IsOwner | IsAdmin]
 
@@ -38,7 +39,8 @@ class SubscriptionUpgradeView(APIView):
         upgrade_tier.delay(tenant.id, new_tier)
 
         return Response({"message": f"Subscription upgraded to {new_tier}"}, status=200)
-    
+
+# View to handle subscription downgrades
 class SubscriptionDowngradeView(APIView):
     permission_classes = [IsAuthenticated, IsOwner | IsAdmin]
 
@@ -63,7 +65,7 @@ class SubscriptionDowngradeView(APIView):
 
         return Response({"message": f"Subscription will be downgraded to {new_tier} in the next billing cycle."}, status=200)
 
-
+# View to get subscription details
 class SubscriptionDetailsView(APIView):
     permission_classes = [IsAuthenticated, IsOwner | IsAdmin]
 
@@ -75,6 +77,7 @@ class SubscriptionDetailsView(APIView):
         serializer = SubscriptionSerializer(tenant.subscriptions)
         return Response(serializer.data, status=200)
 
+# View to list all invoices for a tenant
 class InvoiceListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsOwner | IsAdmin]
     serializer_class = InvoicesSerializer

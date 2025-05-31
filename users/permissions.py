@@ -8,7 +8,6 @@ class IsOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         return bool(request.user and request.user.role =='Owner')
 
-
 class IsAdmin(BasePermission):
     """
     Custom permission to only allow admin users to access an object.

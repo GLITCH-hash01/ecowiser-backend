@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 
 TIER_ORDER= ['Free', 'Pro', 'Enterprise']
 
+# Task to send usage report to tenant
 @shared_task(name="mail_invoice")
 def mail_invoice(tenant_id, invoice_id):
 
@@ -26,7 +27,8 @@ def mail_invoice(tenant_id, invoice_id):
   email.send()
   
   return f"Invoice email sent to {innvoice.tenant.contact_email} for invoice {invoice_id}."
-    
+
+# Task to upgrade the subscription tier for a tenant
 @shared_task(name="upgrade_subscription_tier")
 def upgrade_tier(tenant_id, new_tier):
     
@@ -65,6 +67,8 @@ def upgrade_tier(tenant_id, new_tier):
     mail_invoice.delay(tenant_id=subscription.tenant.id, invoice_id=invoice.invoice_id)
     return f"Tenant {subscription.tenant.name} upgraded to {new_tier} tier."
 
+# Task to send a warning email about project deletion due to subscription downgrade
+# configured to run every day at midnight
 @shared_task(name="project_deletion_warning_mail")
 def project_deletion_warning_mail(tenant_id,new_tier):
     """
@@ -93,6 +97,7 @@ def project_deletion_warning_mail(tenant_id,new_tier):
       email.content_subtype = "html"
       email.send()
 
+# Task to renew the subscription for all tenants configured to run every day at midnight
 @shared_task(name="renew_subscription")
 def renew_subscription():
   subscriptions= Subscription.objects.all()

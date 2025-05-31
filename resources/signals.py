@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from .models import Media,CSVTables
 from .tasks import upload_media_and_thumbnail,handle_csv
 
+# Signal to handle media upload after saving a Media instance
 @receiver(post_save, sender=Media)
 def upload_media_after_save(sender, instance, created, **kwargs):
     if created and instance.file:
@@ -12,6 +13,7 @@ def upload_media_after_save(sender, instance, created, **kwargs):
         visibility = instance.visibility
         upload_media_and_thumbnail.delay(file_path, file_name, str(instance.id), project_id, visibility)  
 
+# Signal to handle CSV upload after saving a CSVTables instance
 @receiver(post_save, sender=CSVTables)
 def upload_csv_after_save(sender, instance, created, **kwargs):
     if created and instance.file:

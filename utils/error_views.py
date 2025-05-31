@@ -1,5 +1,8 @@
 from django.http import JsonResponse
 
+'''
+Custom error views for handling different HTTP errors.
+'''
 def custom_404(request, exception):
     return JsonResponse({
         "success": False,

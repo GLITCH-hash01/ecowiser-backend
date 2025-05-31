@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-
-
 class User(AbstractUser):
   """
   This models represents a user in the system.

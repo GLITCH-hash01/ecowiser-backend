@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-# Create your models here.
+
 class Project(models.Model):
     id = models.UUIDField(primary_key=True, editable=False,auto_created=True,default=uuid.uuid4)
     name = models.CharField(max_length=255)

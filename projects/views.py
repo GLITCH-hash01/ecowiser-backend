@@ -8,6 +8,7 @@ from rest_framework.generics import RetrieveUpdateDestroyAPIView,ListAPIView
 from .models import Project 
 from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
 
+# View to create a new project
 class CreateProjectView(APIView):
   permission_classes = [IsAuthenticated, IsAdminorOwner]
   def post(self, request):
@@ -33,6 +34,7 @@ class CreateProjectView(APIView):
     data = serializer.data
     return Response(data, status=201)
 
+# View to list all projects for the authenticated user
 class ProjectsListView(ListAPIView):
   permission_classes = [IsAuthenticated, IsMember]
   serializer_class = ProjectSerializer
@@ -42,6 +44,7 @@ class ProjectsListView(ListAPIView):
       return Project.objects.none()
     return Project.objects.filter(tenant=self.request.user.tenant)
 
+# View to retrieve, update, or delete a specific project
 class ProjectRUDView(RetrieveUpdateDestroyAPIView):
   permission_classes = [IsAuthenticated]
   queryset = Project.objects.all()

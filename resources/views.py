@@ -8,6 +8,7 @@ from .tasks import change_visibility_file,delete_media_file
 from rest_framework.pagination import PageNumberPagination
 from ecowiser import settings
 
+# View to handle media uploads
 class UploadMediaView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -20,6 +21,7 @@ class UploadMediaView(APIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
+# View to list media resources
 class MediaListView(APIView):
     permission_classes = [IsAuthenticated, ProjectBelongsToTenant]
 
@@ -36,6 +38,7 @@ class MediaListView(APIView):
         serializer = MediaSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+# View to change visibility of media resources
 class MediaSetVisibilityView(APIView):
     permission_classes = [IsAuthenticated,MediaBelongsToTenant]
 
@@ -49,20 +52,25 @@ class MediaSetVisibilityView(APIView):
                 return Response({"error": "Visibility not provided"}, status=400)
             if visibility not in ['Public', 'Private']:
                 return Response({"error": "Invalid visibility"}, status=400)
+            
             # if visibility == resource.visibility:
             #     return Response({"message": "Visibility is already set to this value"}, status=200)
+
             resource.visibility = visibility
-            url=resource.file_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
-            print(url)
-            thumb_url=resource.thumb_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
-            change_visibility_file.delay(url, visibility)
-            change_visibility_file.delay(thumb_url, visibility)
+            if resource.file_url:
+                url=resource.file_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+                change_visibility_file.delay(url, visibility)
+            if resource.thumb_url:
+                thumb_url=resource.thumb_url.removeprefix(f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/')
+                change_visibility_file.delay(thumb_url, visibility)
             resource.save()
             serializer = MediaSerializer(resource)
             return Response(serializer.data, status=200)
+
         except Media.DoesNotExist:
             return Response({"error": "Resource not found"}, status=404)
         
+# View to handle media details and deletion
 class MediaDetailView(APIView):
     permission_classes = [IsAuthenticated,MediaBelongsToTenant]
 
@@ -96,6 +104,7 @@ class MediaDetailView(APIView):
         except Media.DoesNotExist:
             return Response({"error": "Resource not found"}, status=404)
         
+# View to handle CSV table uploads and retrievals
 class CSVTableView(APIView):
     permission_classes = [IsAuthenticated]
 

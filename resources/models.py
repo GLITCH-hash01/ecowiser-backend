@@ -1,15 +1,6 @@
 from django.db import models
 
 class Media(models.Model):
-    """
-    This model represents a media file in the system.
-    Contains the following fields:
-    - file: The media file itself.
-    - name: The name of the media file.
-    - description: A description of the media file.
-    - created_at: The date and time when the media file was created.
-    - updated_at: The date and time when the media file was last updated.
-    """
     project= models.ForeignKey(
         'projects.Project', on_delete=models.CASCADE, related_name='media', blank=False
     )
@@ -61,7 +52,6 @@ class CSVTables(models.Model):
         return self.name
 
     def delete(self, *args, **kwargs):
-        # Delete the file from storage
         if self.file:
             self.file.delete(save=False)
         super().delete(*args, **kwargs)

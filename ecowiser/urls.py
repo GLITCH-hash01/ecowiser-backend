@@ -14,7 +14,7 @@ urlpatterns = [
     path('users/',include('users.urls')),
     path('projects/',include('projects.urls')),
     path('billings/',include('billings.urls')),
-    path('resources/', include('resources.urls'))
+    path('resources/', include('resources.urls')),
 ]
 
 if settings.DEBUG:

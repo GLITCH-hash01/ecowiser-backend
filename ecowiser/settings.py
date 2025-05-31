@@ -22,12 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z%xu-+r-o-vh@=ma8vga*g2!o8niesqna_n4s*h!c*5=0eccdf'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 0) == '1'
-
-ALLOWED_HOSTS = ['13.220.130.154','127.0.0.1','172.31.83.23','localhost','api.harikrishna.me']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','api.harikrishna.me']
 
 
 # Application definition
@@ -49,7 +48,7 @@ INSTALLED_APPS = [
     'billings',
     'resources',
     'django_celery_beat',
-    'silk'
+    # 'silk'
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -76,7 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'silk.middleware.SilkyMiddleware',
+    # 'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'ecowiser.urls'
@@ -126,23 +125,6 @@ MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/'
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-    
-]
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -180,8 +162,6 @@ REST_FRAMEWORK ={
   'EXCEPTION_HANDLER': 'utils.exceptions.custom_exception_handler'
 }
 
-
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
 }
@@ -190,7 +170,6 @@ CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/1')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.example.com')
@@ -214,6 +193,7 @@ SUBSCRIPTION_TIERS_DETAILS = {
     'projects': None,  # Unlimited projects
   }
 }
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -227,3 +207,8 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+]
+PBKDF2_ITERATIONS = 1000  

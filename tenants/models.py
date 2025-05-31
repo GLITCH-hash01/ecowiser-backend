@@ -2,6 +2,7 @@ from django.db import models
 import uuid
 from storages.backends.s3boto3 import S3Boto3Storage
 
+# Custom storage class for public logo storage on S3
 class PublicLogoStorage(S3Boto3Storage):
     location = 'tenant_logos'
     default_acl = 'public-read'

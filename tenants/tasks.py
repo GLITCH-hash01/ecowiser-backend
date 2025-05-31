@@ -3,10 +3,14 @@ from .models import Tenant
 from projects.models import Project
 from django.template.loader import render_to_string
 from django.utils import timezone
+from billings.serializers import InvoicesSerializer, SubscriptionSerializer
+from billings.tasks import mail_invoice
 from django.core.mail import EmailMessage
 from django.db.models import Sum
 from ecowiser.settings import SUBSCRIPTION_TIERS_DETAILS
+from django.conf import settings
 
+# Task to send usage report to tenant
 @shared_task(name="send_usage_report")
 def get_usage_data(tenant_id):
   tenant= Tenant.objects.get(id=tenant_id)
@@ -61,15 +65,18 @@ def get_usage_data(tenant_id):
   email.send()
   return "Email sent successfully"
 
+# Task to send usage report to all tenants with Enterprise or Pro subscription tiers
+# Configured to run every day at midnight
 @shared_task(name="send_usage_report_to_all")
 def send_usage_report_to_all():
-    t=timezone.now()
     tenants = Tenant.objects.filter(
         subscription_tier__in=[ 'Enterprise', 'Pro'],)
     for tenant in tenants:
       get_usage_data(tenant.id)
     return "Usage report sent to all tenants"
 
+# Task to automatically delete projects for tenants on Free or Pro subscription tiers after 10 days if they exceed the allowed number of projects.
+# Configured to run every day at midnight
 @shared_task(name="auto_project_deletion")
 def auto_project_deletion():
   tenants=Tenant.objects.filter(subscriptions__subscription_tier__in=['Free', 'Pro']).distinct()
@@ -102,4 +109,39 @@ def auto_project_deletion():
     except Exception as e:
       print(f"Error occurred while deleting projects for tenant {tenant.id}: {e}")
   return "Auto project deletion task completed successfully"
-    
+
+# Task to create a subscription and invoice for a tenant
+@shared_task(name="create_tenant_subscription")
+def create_subscription_and_invoice(tenant_id, subscription_tier='Free'):
+
+    tenant = Tenant.objects.get(id=tenant_id)
+
+    # Create subscription record
+    subscription_data = {
+        "tenant": tenant.id,
+        "subscription_tier": subscription_tier,
+        "next_subscription_tier": subscription_tier,
+    }
+    subscription_serializer = SubscriptionSerializer(data=subscription_data)
+    if subscription_serializer.is_valid():
+        subscription = subscription_serializer.save()
+    else:
+        # Handle error (logging, retry, etc.)
+        raise ValueError(f"Subscription creation error: {subscription_serializer.errors}")
+
+    # Create invoice record
+    invoice_data = {
+        "tenant": tenant.id,
+        "subscription_id": subscription.id,
+        "amount": SUBSCRIPTION_TIERS_DETAILS[subscription_tier]['price'],
+        "billing_start_date": subscription.current_cycle_start_date,
+        "billing_end_date": subscription.current_cycle_end_date,
+    }
+    invoice_serializer = InvoicesSerializer(data=invoice_data)
+    if invoice_serializer.is_valid():
+        invoice = invoice_serializer.save()
+    else:
+        raise ValueError(f"Invoice creation error: {invoice_serializer.errors}")
+
+    # Send invoice email
+    mail_invoice.delay(tenant_id=tenant.id, invoice_id=invoice.invoice_id)

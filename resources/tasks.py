@@ -8,6 +8,7 @@ from .models import Media,CSVTables
 import pandas as pd
 import uuid
 
+# Task to upload media files and create thumbnails if applicable.
 @shared_task(name="upload_media_and_thumbnail")
 def upload_media_and_thumbnail(file_path, file_name, media_id, project_id,visibility):
     """
@@ -74,6 +75,7 @@ def upload_media_and_thumbnail(file_path, file_name, media_id, project_id,visibi
         print(f"Error uploading media and thumbnail: {e}")
         raise
 
+# Task to change the visibility of a file in S3.
 @shared_task(name="change_visibility_file")
 def change_visibility_file(file_key,visibility):
     s3 = boto3.client(
@@ -92,6 +94,7 @@ def change_visibility_file(file_key,visibility):
         print(f"Error changing visibility of file {file_key}: {e}")
         raise
 
+# Task to delete a media file from S3.
 @shared_task(name="delete_media_file")
 def delete_media_file(file_key):
     """Delete a media file from S3."""
@@ -108,6 +111,7 @@ def delete_media_file(file_key):
         print(f"Error deleting media file {file_key}: {e}")
         raise
 
+# Task to handle CSV file processing, including uploading to S3 and extracting data.
 @shared_task(name="handle_csv")
 def handle_csv(file_path,project_id, csv_id,file_name):
   s3 = boto3.client(

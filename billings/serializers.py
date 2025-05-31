@@ -1,5 +1,6 @@
-from rest_framework.serializers import ModelSerializer,BooleanField,DateTimeField
+from rest_framework.serializers import ModelSerializer
 from .models import Subscription,Invoices
+
 
 class SubscriptionSerializer(ModelSerializer):
   class Meta:

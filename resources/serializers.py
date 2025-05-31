@@ -11,7 +11,9 @@ class MediaSerializer(ModelSerializer):
         model = Media
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'file_url', 'thumb_url']
-    
+
+    # These methods retrieve the file URL based on the visibility of the media instance.
+    # Creates a signed URL for private files if visibility is set to 'Private'.
     def get_file_url(self,instance):
         if not instance.file_url:
             return None

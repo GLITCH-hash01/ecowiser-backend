@@ -24,21 +24,6 @@ class IsMember(BasePermission):
     def has_object_permission(self, request, view, obj):
         return bool(request.user and request.user.role == 'Member')
 
-class IsSelf(BasePermission):
-    """
-    Custom permission to only allow the user themselves to access their own data.
-    """
-
-    def has_object_permission(self, request, view, obj):
-        return bool(request.user and request.user.id == obj.id)
-
-class IsMemberofTenant(BasePermission):
-    """
-    Custom permission to only allow members of a tenant to access an object.
-    """
-
-    def has_object_permission(self, request, view, obj):
-        return bool(request.user and request.user.tenant == obj.tenant)
 
 class AdminOwnerPrivilages(BasePermission):
     """

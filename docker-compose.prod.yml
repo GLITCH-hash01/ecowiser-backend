@@ -12,9 +12,9 @@ services:
     depends_on:
       - redis
     volumes:
-      - static_volume:/app/static
+      - static_volume:/app/staticfiles
       - media_volume:/app/media
-      - ./staticfiles:/app/staticfiles
+    
     restart: always
   
   redis:

@@ -1,0 +1,1290 @@
+{
+	"info": {
+		"_postman_id": "71c8f23e-d066-4f78-8ef1-8ed25654c69e",
+		"name": "Ecowise",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27115340"
+	},
+	"item": [
+		{
+			"name": "Tenants",
+			"item": [
+				{
+					"name": "ManageMembers",
+					"item": [
+						{
+							"name": "List Members",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/tenants/members/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tenants",
+										"members",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Member",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user_email\":\"Lexus74@gmail.com\",\r\n    \"role\":\"Admin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/tenants/members/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tenants",
+										"members",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Manage Roles",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user_email\":\"Lexus74@gmail.com\",\r\n    \"role\":\"Owner\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/tenants/members/role/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tenants",
+										"members",
+										"role",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Members",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user_email\":\"Lexus74@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/tenants/members/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tenants",
+										"members",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Manage Tenant",
+					"item": [
+						{
+							"name": "Get Tenant",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/tenants/manage/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tenants",
+										"manage",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Tenant",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "logo",
+											"type": "file",
+											"src": "/C:/Users/user/Downloads/download.jpg",
+											"disabled": true
+										},
+										{
+											"key": "name",
+											"value": "Leffler and Schuppe",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURL}}/tenants/manage/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tenants",
+										"manage",
+										""
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Tenant",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/tenants/manage/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tenants",
+										"manage",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Generate Report",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/tenants/generate-usage-report/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"tenants",
+										"generate-usage-report",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Tenant",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "{{$randomCompanyName}}",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "{{$randomEmail}}\n",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{$randomPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "logo",
+									"type": "file",
+									"src": "/C:/Users/user/Downloads/download.png"
+								},
+								{
+									"key": "contact_email",
+									"value": "harikichus2004@gmail.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/tenants/create/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"tenants",
+								"create",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Self",
+					"item": [
+						{
+							"name": "Read self",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/users/self/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"self",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update self",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\":\"Hello@123\",\r\n    \"password\":\"Hello@1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/self/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"self",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Self",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/users/self/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"self",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "By Id",
+					"item": [
+						{
+							"name": "Read by Id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/users/20/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"20",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Signup",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"{{$randomUserName}}\",\r\n    \"password\":\"Hello@123\",\r\n    \"first_name\":\"{{$randomFirstName}}\",\r\n    \"last_name\":\"{{$randomLastName}}\",\r\n    \"email\":\"{{$randomEmail}}\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/sign-up/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"sign-up",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response body\r",
+									"const responseBody = pm.response.json();\r",
+									"\r",
+									"// Set the access token and refresh token to environment variables\r",
+									"pm.environment.set('access_token', responseBody.data.access);\r",
+									"pm.environment.set('refresh_token', responseBody.data.refresh);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"Gregoria.Dietrich\",\r\n    \"password\":\"Hello@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/login/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Projects",
+			"item": [
+				{
+					"name": "Create Project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Test Project\",\r\n    \"description\":\"Just to check if everything is fine\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/projects/create/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"projects",
+								"create",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Projects List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/projects/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"projects",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Project by Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/projects/7d1cf2ff-e35a-48b0-a74a-c1222ce074e4/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"projects",
+								"7d1cf2ff-e35a-48b0-a74a-c1222ce074e4",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"FIRST TEST\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/projects/7d1cf2ff-e35a-48b0-a74a-c1222ce074e4/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"projects",
+								"7d1cf2ff-e35a-48b0-a74a-c1222ce074e4",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/projects/7d1cf2ff-e35a-48b0-a74a-c1222ce074e4/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"projects",
+								"7d1cf2ff-e35a-48b0-a74a-c1222ce074e4",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Billings",
+			"item": [
+				{
+					"name": "Upgrade Tier",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subscription_tier\":\"Enterprise\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/billings/upgrade/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"billings",
+								"upgrade",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Downgrade Tier",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subscription_tier\":\"Pro\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/billings/downgrade/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"billings",
+								"downgrade",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Billing History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/billings/invoices/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"billings",
+								"invoices",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscription id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/billings/subscription/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"billings",
+								"subscription",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resources",
+			"item": [
+				{
+					"name": "CSV",
+					"item": [
+						{
+							"name": "Upload CSV",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/D:/Projects/IEEE LINK/yess_data_management/data/attendee.csv"
+										},
+										{
+											"key": "name",
+											"value": "Test file",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "desc",
+											"type": "text"
+										},
+										{
+											"key": "project",
+											"value": "8d100691-dbd7-4632-8477-d69c21bceccd",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURL}}/resources/csv/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"csv",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET CSV's",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/resources/csv/?project_id=8d100691-dbd7-4632-8477-d69c21bceccd",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"csv",
+										""
+									],
+									"query": [
+										{
+											"key": "project_id",
+											"value": "8d100691-dbd7-4632-8477-d69c21bceccd"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete csv",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/resources/csv/?id=1",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"csv",
+										""
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Media",
+					"item": [
+						{
+							"name": "Upload Media",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/user/Downloads/SampleVideo_1280x720_5mb.mp4"
+										},
+										{
+											"key": "name",
+											"value": "Hello",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "descc",
+											"type": "text"
+										},
+										{
+											"key": "visibility",
+											"value": "Public",
+											"type": "text"
+										},
+										{
+											"key": "project",
+											"value": "8d100691-dbd7-4632-8477-d69c21bceccd",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURL}}/resources/upload/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"upload",
+										""
+									],
+									"query": [
+										{
+											"key": "file",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change Visibility",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"visibility\":\"Private\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/resources/media/visibility/2/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"media",
+										"visibility",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get a file",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/resources/media/8d100691-dbd7-4632-8477-d69c21bceccd/?id=2",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"media",
+										"8d100691-dbd7-4632-8477-d69c21bceccd",
+										""
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get file by Id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/resources/media/2/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"media",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Media List",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/resources/media/8d100691-dbd7-4632-8477-d69c21bceccd/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"media",
+										"8d100691-dbd7-4632-8477-d69c21bceccd",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Media",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/resources/media/2/",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"resources",
+										"media",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://127.0.0.1:8000/",
+			"type": "default",
+			"disabled": true
+		}
+	]
+}
